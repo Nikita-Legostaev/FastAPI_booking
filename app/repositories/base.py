@@ -20,9 +20,13 @@ class BaseRepositories:
             await session.commit()
             
     @classmethod
-    async def update(cls, id, **data):
+    async def update(cls, id: int, **data):
         async with async_session() as session:
-            query = update(cls.model).where(cls.model.id == id).values(**data)
+            query = (
+                update(cls.model)
+                .where(cls.model.id == id)
+                .values(**data)
+            )
             await session.execute(query)
             await session.commit()
     
