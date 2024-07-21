@@ -1,16 +1,23 @@
 from sqlalchemy import JSON, ForeignKey, Integer, String
 from app.database import Base
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
 
 
 class Rooms(Base):
     __tablename__ = "rooms"
     
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    hotel_id: Mapped[int] = mapped_column(Integer, ForeignKey('hotels.id'))
-    name: Mapped[str] = mapped_column(String)
-    description: Mapped[str] = mapped_column(String, nullable=True)
-    price: Mapped[int] = mapped_column(Integer)
-    services: Mapped[dict] = mapped_column(JSON, nullable=True)
-    quantity: Mapped[int] = mapped_column(Integer)
-    image_id: Mapped[int] = mapped_column(Integer)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    hotel_id: Mapped[int] = mapped_column(ForeignKey('hotels.id'))
+    name: Mapped[str]
+    description: Mapped[dict[str] | None]
+    price: Mapped[int] 
+    services: Mapped[dict[str] | None]
+    quantity: Mapped[int] 
+    image_id: Mapped[int]
+    
+    hotel: Mapped["Hotels"] = relationship(back_populates="rooms")
+    booking: Mapped["Bookings"] = relationship(back_populates="rooms")
+    
+    def __str__(self) -> str:
+        return f"Room #{self.id} - {self.name}"
