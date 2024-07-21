@@ -34,13 +34,16 @@ async def get_hotels_by_location(
     
 @router.post('/')
 async def add_hotel(SHotels: SHotels, users: Users = Depends(get_current_user)):
-    return await HotelsRepository.add(**SHotels.model_dump())
+    await HotelsRepository.add(**SHotels.model_dump())
+    return {"detail": "Hotel added successfully"}
 
 @router.patch('/{hotel_id}')
 async def update_hotel(hotel_id: int, SHotels: SHotels, users: Users = Depends(get_current_user)):
-    return await HotelsRepository.update(hotel_id, **SHotels.model_dump())
+    await HotelsRepository.update(hotel_id, **SHotels.model_dump())
+    return {"detail": "Hotel updated successfully"}
     
 @router.delete('/{hotel_id}')
 async def delete_hotel(hotel_id: int, users: Users = Depends(get_current_user)):
-    return await HotelsRepository.delete(hotel_id)
+    await HotelsRepository.delete(hotel_id)
+    return {"detail": "Hotel deleted successfully"}
 

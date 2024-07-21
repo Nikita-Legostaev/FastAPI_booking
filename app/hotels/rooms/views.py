@@ -28,12 +28,15 @@ async def get_rooms_all() -> list[SRoomAll]:
 
 @router.post("/")
 async def create_room(room_info: SRoom, users: Users = Depends(get_current_user)):
-    return await RoomsRepository.add(**room_info.model_dump())
+    await RoomsRepository.add(**room_info.model_dump())
+    return {"detail": "Room created successfully"}
 
 @router.patch("/{room_id}")
 async def update_room(room_id: int, room_info: SRoom, users: Users = Depends(get_current_user)):
-    return await RoomsRepository.update(room_id, **room_info.model_dump())
+    await RoomsRepository.update(room_id, **room_info.model_dump())
+    return {"detail": "Room updated successfully"}
 
 @router.delete("/{room_id}")
 async def delete_room(room_id: int, users: Users = Depends(get_current_user)):
-    return await RoomsRepository.delete(room_id)
+    await RoomsRepository.delete(room_id)
+    return {"detail": "Room deleted successfully"}

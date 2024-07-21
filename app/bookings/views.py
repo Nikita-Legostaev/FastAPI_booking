@@ -32,11 +32,7 @@ async def add_booking(
         booking.date_from,
         booking.date_to,
     )
-    if not booking:
-        raise HTTPException(status_code=400, detail="Could not add booking")
-    type = TypeAdapter(SNewBooking)
-    booking = type.validate_python(booking)
-    return booking
+    return {"detail": "Booking created successfully"}
 
 
 @router.delete("/{booking_id}")
@@ -45,3 +41,4 @@ async def remove_booking(
     current_user: Users = Depends(get_current_user),
 ):
     await BookingRepository.delete(id=booking_id)
+    return {"detail": "Booking deleted successfully"}

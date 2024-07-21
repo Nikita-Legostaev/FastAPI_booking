@@ -41,6 +41,7 @@ async def change_password_user(
         raise HTTPException(status_code=404, detail="User not found")
     hashed_password = get_password_hash(new_password)
     await UserRepository.update(user.id, hash_password = hashed_password)
+    return {"detail": "Password updated successfully"}
     
 
 @router.delete("/delete")
@@ -51,3 +52,4 @@ async def delete_user(
     if not existing_user:
         raise HTTPException(status_code=404, detail="User not found")
     await UserRepository.delete(id=user.id)
+    return {"detail": "User deleted successfully"}
