@@ -3,9 +3,11 @@
 from datetime import date
 from sqlalchemy import and_, func, insert, or_, select
 from app.bookings.models import Bookings
+from app.expection import RoomFullyBooked
 from app.hotels.rooms.models import Rooms
 from app.repositories.base import BaseRepositories
 from app.database import async_session
+from sqlalchemy.exc import SQLAlchemyError
 
 
 class BookingRepository(BaseRepositories):
@@ -100,6 +102,12 @@ class BookingRepository(BaseRepositories):
                     await session.commit()
                     return new_booking.mappings().one()
                 else:
-                    raise ValueError("Not enough rooms available")
-        except Exception:
-            raise "Could not"
+                    raise RoomFullyBooked
+        except RoomFullyBooked:
+            raise RoomFullyBooked
+        except (SQLAlchemyError, Exception) as e:
+            if isinstance(e, SQLAlchemyError):
+                msg = "Database Exc: Cannot add booking"
+            elif isinstance(e, Exception):
+                msg = "Unknown Exc: Cannot add booking"
+        

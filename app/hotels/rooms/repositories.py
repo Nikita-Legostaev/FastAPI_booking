@@ -5,6 +5,7 @@ from app.bookings.models import Bookings
 from app.repositories.base import BaseRepositories
 from app.hotels.rooms.models import Rooms
 from app.database import async_session
+from sqlalchemy.exc import SQLAlchemyError
 
 
 class RoomsRepository(BaseRepositories):
@@ -42,9 +43,14 @@ class RoomsRepository(BaseRepositories):
                 Rooms.hotel_id == hotel_id
             )
         )
-        async with async_session() as session:
-            rooms = await session.execute(get_rooms)
-            return rooms.mappings().all()
-
+        try:
+            async with async_session() as session:
+                rooms = await session.execute(get_rooms)
+                return rooms.mappings().all()
+        except (SQLAlchemyError, Exception) as e:
+            if isinstance(e, SQLAlchemyError):
+                msg = "Database Exc: Cannot add booking"
+            elif isinstance(e, Exception):
+                msg = "Unknown Exc: Cannot add booking"
     
     

@@ -4,6 +4,7 @@ from pydantic import TypeAdapter, parse_obj_as
 from app.bookings.repositories import BookingRepository
 from app.bookings.shemas import SBooking, SBookingInfo, SNewBooking
 from app.auth.dependes import get_current_user
+from app.expection import NotFoundBookingsException
 from app.users.models import Users
 
 router = APIRouter(
@@ -21,7 +22,7 @@ async def get_all_bookings() -> list[SBooking]:
     return await BookingRepository.get_all()
 
 
-@router.post("", status_code=201)
+@router.post("")
 async def add_booking(
     booking: SNewBooking,
     user: Users = Depends(get_current_user),
@@ -32,13 +33,16 @@ async def add_booking(
         booking.date_from,
         booking.date_to,
     )
-    return {"detail": "Booking created successfully"}
+    return {"detail": "Бронирование добавлено успешно"}
 
 
 @router.delete("/{booking_id}")
 async def remove_booking(
     booking_id: int,
-    current_user: Users = Depends(get_current_user),
+    user: Users = Depends(get_current_user),
 ):
+    booking = await BookingRepository.find_one_or_none(id=booking_id)
+    if not booking:
+        raise NotFoundBookingsException
     await BookingRepository.delete(id=booking_id)
-    return {"detail": "Booking deleted successfully"}
+    return {"detail": "Бронирование удалено успешно"}
